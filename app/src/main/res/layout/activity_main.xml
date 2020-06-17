@@ -16,12 +16,12 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/Header_bg"
-            />
+            android:src="@drawable/header_bg"
+            android:scaleType="fitXY"/>
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
             android:src="@drawable/logo"
             android:layout_gravity="center_horizontal|bottom"/>
 
@@ -34,13 +34,50 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout"
-        android:paddingTop="80dp">
+        app:layout_constraintBottom_toTopOf="@+id/footer"
+        android:paddingTop="30dp"
+        android:paddingBottom="30dp">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageButton
+            android:layout_width="315dp"
+            android:layout_height="60dp"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/logo" />
+            android:background="@drawable/main_page_multi"
+            android:layout_marginBottom="30dp"
+            android:onClick="buttonClick"/>
+
+        <ImageButton
+            android:layout_width="315dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/main_page_single"
+            android:layout_marginBottom="30dp"
+            />
+
+        <ImageButton
+            android:layout_width="315dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/main_page_translate"
+            />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="#4C5A72"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Create By Kim Yong Hwan"
+            android:textColor="#fff"
+            android:textSize="14dp"
+            android:textStyle="bold"
+            />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

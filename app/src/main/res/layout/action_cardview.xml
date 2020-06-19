@@ -4,21 +4,24 @@
     android:layout_width="335dp"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     card_view:cardCornerRadius="10dp"
-    card_view:cardElevation="8dp">
+    card_view:cardElevation="8dp"
+    android:layout_marginBottom="35dp"
+    android:layout_gravity="center_horizontal">
     
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        >
 
         <TextView
+            android:id="@+id/action_preFix"
             android:layout_width="65dp"
             android:layout_height="match_parent"
             android:gravity="center"
             android:textSize="30dp"
             android:textColor="@color/black"
-            android:textStyle="bold"
-            android:text="R" />
+            android:textStyle="bold" />
 
         <ImageView
             android:layout_width="25dp"
@@ -27,10 +30,11 @@
             android:layout_gravity="center_vertical"/>
 
         <TextView
+            android:id="@+id/action_content"
             android:layout_width="155dp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:textSize="30dp"
+            android:textSize="25dp"
             android:textColor="@color/black"
             android:textStyle="bold"/>
         
@@ -41,6 +45,7 @@
             android:layout_gravity="center_vertical"/>
         
         <TextView
+            android:id="@+id/action_postFix"
             android:layout_width="65dp"
             android:layout_height="match_parent"
             android:gravity="center"

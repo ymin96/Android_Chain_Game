@@ -1,12 +1,11 @@
-package com.ymin.chaingame;
+package com.ymin.chaingame.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
-import com.ymin.chaingame.dialog.CheckTypesTask;
+import com.ymin.chaingame.R;
 import com.ymin.chaingame.dialog.ProgressDialog;
 
 public class MainActivity extends AppCompatActivity {
@@ -14,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_multi_game);
+        setContentView(R.layout.activity_main);
     }
 
     public void buttonClick(View v){

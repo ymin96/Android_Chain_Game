@@ -2,8 +2,6 @@ package com.ymin.chaingame.dialog;
 
 import android.os.AsyncTask;
 
-import com.ymin.chaingame.MainActivity;
-
 public class CheckTypesTask extends AsyncTask<Void, Void, Void> {
 
     public void setProgressDialog(ProgressDialog progressDialog) {

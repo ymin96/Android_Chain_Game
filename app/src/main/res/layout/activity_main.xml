@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
     <FrameLayout
         android:id="@+id/frameLayout"
@@ -24,8 +24,6 @@
             android:layout_height="160dp"
             android:src="@drawable/logo"
             android:layout_gravity="center_horizontal|bottom"/>
-
-
 
     </FrameLayout>
 
@@ -80,4 +78,5 @@
             android:textStyle="bold"
             />
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

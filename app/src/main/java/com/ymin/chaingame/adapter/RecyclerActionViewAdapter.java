@@ -1,73 +1,91 @@
 package com.ymin.chaingame.adapter;
 
 import android.content.Context;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ymin.chaingame.R;
+import com.ymin.chaingame.adapter.viewholder.ActionExtendViewHolder;
+import com.ymin.chaingame.adapter.viewholder.ActionViewHolder;
 import com.ymin.chaingame.etc.Action;
 
 import java.util.ArrayList;
 
-public class RecyclerActionViewAdapter extends RecyclerView.Adapter<RecyclerActionViewAdapter.ViewHoler> {
+public class RecyclerActionViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int NORMAL_TYPE = 0;
+    private static final int EXTEND_TYPE = 1;
 
-    private ArrayList<Action> mData = null;
+    private ArrayList<Action> actions = null;
 
     public RecyclerActionViewAdapter(ArrayList<Action> list){
-        this.mData = list;
+        this.actions = list;
     }
 
-    public void setmData(ArrayList<Action> mData) {
-        this.mData = mData;
+    public void setActions(ArrayList<Action> actions) {
+        this.actions = actions;
     }
 
 
     @NonNull
     @Override
     // 아이템 뷰를 위한 뷰홀더 객체 생성하여 리턴.
-    public ViewHoler onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = null;
+        RecyclerView.ViewHolder vh = null;
 
-        View view = inflater.inflate(R.layout.action_cardview, parent, false);
-        RecyclerActionViewAdapter.ViewHoler vh = new RecyclerActionViewAdapter.ViewHoler(view);
+        // 뷰 타입에 따라 노말, 확장형 뷰홀더를 만들어 리턴
+        switch (viewType){
+            case NORMAL_TYPE:
+                view = inflater.inflate(R.layout.action_cardview, parent, false);
+                vh = new ActionViewHolder(view);
+                break;
+            case EXTEND_TYPE:
+                view = inflater.inflate(R.layout.action_cardview_extend, parent, false);
+                vh = new ActionExtendViewHolder(view);
+                break;
+        }
 
         return vh;
     }
 
     @Override
-    // position에 해당하는 데이터를 뷰홀더의 아이템뷰에 표시.
-    public void onBindViewHolder(@NonNull ViewHoler holder, int position) {
-        Action item = mData.get(position);
+    // position 에 해당하는 데이터를 뷰홀더의 아이템뷰에 표시.
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Action item = actions.get(position);
+        ActionViewHolder actionHolder = (ActionViewHolder) holder;
 
-        holder.preFix.setText(item.getPreFix());
-        holder.content.setText(item.getContent());
-        holder.postFix.setText(item.getPostFix());
+        // 공통된 데이터는 인터페이스를 통해 넣어준다.
+        actionHolder.getPreFix().setText(item.getPreFix());
+        actionHolder.getContent().setText(item.getContent());
+        actionHolder.getPostFix().setText(item.getPostFix());
+
+        // 만약 확장형 타입이면 추가로 필요한 데이터를 넣어준다.
+        if(item.getType() == EXTEND_TYPE){
+            ((ActionExtendViewHolder) actionHolder).getSubTitle().setText(item.getSubTitle());
+            ((ActionExtendViewHolder) actionHolder).getSubstance().setText(item.getSubstance());
+        }
     }
 
     @Override
     // 전체 데이터 갯수 리턴
     public int getItemCount() {
-        return mData.size();
+        return actions.size();
     }
 
-    // 아이템 뷰를 저장하는 뷰홀더 클래스
-    public class ViewHoler extends RecyclerView.ViewHolder{
-        TextView postFix, preFix, content;
-
-        public ViewHoler(@NonNull View itemView) {
-            super(itemView);
-
-            // 뷰 객체에 대한 참조.
-            preFix = itemView.findViewById(R.id.action_preFix);
-            content = itemView.findViewById(R.id.action_content);
-            postFix = itemView.findViewById(R.id.action_postFix);
-        }
+    @Override
+    public int getItemViewType(int position) {
+        Action action = actions.get(position);
+        if(action.getType() == NORMAL_TYPE)
+            return NORMAL_TYPE;
+        else
+            return EXTEND_TYPE;
     }
+
+
 }

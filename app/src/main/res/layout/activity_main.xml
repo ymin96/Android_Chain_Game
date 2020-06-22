@@ -37,14 +37,15 @@
         android:paddingBottom="30dp">
 
         <ImageButton
+            android:id="@+id/multiplay"
             android:layout_width="315dp"
             android:layout_height="60dp"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/main_page_multi"
-            android:layout_marginBottom="30dp"
-            android:onClick="buttonClick"/>
+            android:layout_marginBottom="30dp"/>
 
         <ImageButton
+            android:id="@+id/singleplay"
             android:layout_width="315dp"
             android:layout_height="60dp"
             android:layout_gravity="center_horizontal"
@@ -53,6 +54,7 @@
             />
 
         <ImageButton
+            android:id="@+id/translate"
             android:layout_width="315dp"
             android:layout_height="60dp"
             android:layout_gravity="center_horizontal"

@@ -1,6 +1,8 @@
 package com.ymin.chaingame.etc.Scrawler;
 
 
+import com.ymin.chaingame.etc.Action;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
@@ -12,15 +14,21 @@ import java.io.IOException;
 
 public class NaverScrawler {
 
-    public JSONObject search(String word) throws IOException {
+    public String search(String word) {
         JSONObject result = new JSONObject();
+        // 초기 데이터 설정
+        result.put("CONTENT", word);
+        result.put("PREFIX", word.substring(0, 1));
+        result.put("POSTFIX", word.substring(word.length() - 1));
+
         // 제공받은 문자를 소문자로 변경
         word = word.toLowerCase();
         StringBuilder sub = new StringBuilder();
 
-        Document doc = Jsoup.connect("http://endic.naver.com/search.nhn?query="+word).get();
-        Element content = doc.getElementById("content");
         try {
+            Document doc = Jsoup.connect("http://endic.naver.com/search.nhn?query="+word).get();
+            Element content = doc.getElementById("content");
+
             JSONArray substance = new JSONArray();
             String clip;
 
@@ -40,16 +48,16 @@ public class NaverScrawler {
             }
 
             // 단어를 찾는데 성공하면 알맞은 데이터를 넣어 리턴해준다.
-            result.put("CHECK","SUCCESS");
+            result.put("RETURN_TYPE", Action.SUCCESS);
             result.put("SUB_TITLE", word);
             result.put("SUBSTANCE", substance);
 
-        } catch (IndexOutOfBoundsException e){  // 단어를 찾는데 실패
-            result.put("CHECK", "FAIL");
+        } catch (Exception e){  // 단어를 찾는데 실패
+            result.put("RETURN_TYPE", Action.SEARCH_FAIL);
             result.put("SUB_TITLE", "실패");
             result.put("SUBSTANCE", "단어를 찾을 수 없습니다.");
-            return result;
+            return result.toJSONString();
         }
-        return result;
+        return result.toJSONString();
     }
 }

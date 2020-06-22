@@ -14,14 +14,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ymin.chaingame.R;
 import com.ymin.chaingame.adapter.RecyclerActionViewAdapter;
 import com.ymin.chaingame.etc.Action;
+import com.ymin.chaingame.etc.Convert;
+import com.ymin.chaingame.layout.RecyclerViewLayoutManager;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class MultipleGame extends AppCompatActivity implements Button.OnClickListener{
+public class MultipleGameActivity extends AppCompatActivity implements Button.OnClickListener{
     RecyclerView mRecyclerView = null;
     RecyclerActionViewAdapter mAdapter = null;
-    ArrayList<Action> actions = new ArrayList<>();
+    ArrayList<Action> actionList = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,16 +32,21 @@ public class MultipleGame extends AppCompatActivity implements Button.OnClickLis
 
         // 리사이클러뷰 세팅
         mRecyclerView = findViewById(R.id.recycler);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setLayoutManager(
+                new RecyclerViewLayoutManager(this,
+                    this.getResources().getDisplayMetrics().widthPixels,
+                    Convert.dpToPx(this, 335)
+                )
+        );
         mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                mRecyclerView.scrollToPosition(actions.size() - 1);
+                mRecyclerView.scrollToPosition(actionList.size() - 1);
             }
         }); // 화면이 Resize 되면 리사이클러뷰의 스크롤를 가장 아래로 바꿈
 
         // 리사이클러뷰에 어뎁터 객체 지정
-        mAdapter = new RecyclerActionViewAdapter(actions);
+        mAdapter = new RecyclerActionViewAdapter(actionList);
         mRecyclerView.setAdapter(mAdapter);
 
         addItem();
@@ -58,7 +65,7 @@ public class MultipleGame extends AppCompatActivity implements Button.OnClickLis
             action.setPreFix("S");
             action.setContent("Content" + i);
             action.setPostFix("E");
-            actions.add(action);
+            actionList.add(action);
         }
 
         action = new Action();
@@ -68,7 +75,7 @@ public class MultipleGame extends AppCompatActivity implements Button.OnClickLis
         action.setPostFix("T");
         action.setSubTitle("Rest");
         action.setSubstance("1.(어떤 것의) 나머지\n2.나머지 (사람들것들), 다른 사람들\n3.쉬다, 휴식을 취하다, 자다; (몸의 피로한 부분을 편하게) 쉬다");
-        actions.add(action);
+        actionList.add(action);
     }
 
     @Override
@@ -79,8 +86,8 @@ public class MultipleGame extends AppCompatActivity implements Button.OnClickLis
             String content = editText.getText().toString();
             Action temp = new Action();
             temp.setType(1).setPreFix("T").setContent(content).setPostFix("T").setSubTitle("임시 데이터").setSubstance("임시 내용");
-            actions.remove(actions.size() - 1);
-            actions.add(temp);
+            actionList.remove(actionList.size() - 1);
+            actionList.add(temp);
             mAdapter.notifyDataSetChanged();
         }
     }

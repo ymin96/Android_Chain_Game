@@ -100,12 +100,12 @@ public class Action {
             prefix =(String) object.get("PREFIX");
             postfix =(String) object.get("POSTFIX");
             subTitle = (String)object.get("SUB_TITLE");
-            resultType = Integer.parseInt((String)object.get("RETURN_TYPE"));
+            resultType = Math.toIntExact((Long)object.get("RETURN_TYPE"));
 
             if (resultType == SUCCESS) {
                 JSONArray jsonArray = (JSONArray) object.get("SUBSTANCE");
                 for (int i = 1; i <= jsonArray.size(); i++) {
-                    subStance += i + ". " + jsonArray.get(i) + "\n";
+                    subStance += i + ". " + jsonArray.get(i-1) + "\n";
                 }
             } else {
                 subStance = (String) object.get("SUBSTANCE");

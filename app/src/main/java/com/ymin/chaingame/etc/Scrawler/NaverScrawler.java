@@ -18,8 +18,8 @@ public class NaverScrawler {
         JSONObject result = new JSONObject();
         // 초기 데이터 설정
         result.put("CONTENT", word);
-        result.put("PREFIX", word.substring(0, 1));
-        result.put("POSTFIX", word.substring(word.length() - 1));
+        result.put("PREFIX", word.substring(0, 1).toUpperCase());
+        result.put("POSTFIX", word.substring(word.length() - 1).toUpperCase());
 
         // 제공받은 문자를 소문자로 변경
         word = word.toLowerCase();
@@ -56,6 +56,7 @@ public class NaverScrawler {
             result.put("RETURN_TYPE", Action.SEARCH_FAIL);
             result.put("SUB_TITLE", "실패");
             result.put("SUBSTANCE", "단어를 찾을 수 없습니다.");
+            result.put("POSTFIX","");
             return result.toJSONString();
         }
         return result.toJSONString();

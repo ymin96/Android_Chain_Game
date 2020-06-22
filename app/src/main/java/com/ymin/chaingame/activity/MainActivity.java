@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     }
 
     @Override
-    // 버튼 클릭 이벤트 리스터 생성
+    // 버튼 클릭 이벤트 리스너 생성
     public void onClick(View view) {
         Intent intent;
         switch (view.getId()){

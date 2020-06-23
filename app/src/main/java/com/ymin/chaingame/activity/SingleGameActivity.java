@@ -5,11 +5,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,11 +28,12 @@ import com.ymin.chaingame.layout.RecyclerViewLayoutManager;
 import java.util.ArrayList;
 
 public class SingleGameActivity extends AppCompatActivity implements Button.OnClickListener{
-
+    final static private String TAG = "SingleGameActivity";
     RecyclerView mRecyclerView = null;
     RecyclerActionViewAdapter mAdapter = null;
     ArrayList<Action> actionList = new ArrayList<>();
-
+    SearchTask searchTask = new SearchTask();
+    CounterThread prev;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,15 +66,35 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
     // 버튼 클릭 이벤트
     @Override
     public void onClick(View view) {
-        SearchTask searchTask = new SearchTask();
         if (view.getId() == R.id.action_submit) {
+            // searchTask를 실행하기 전에 이전 searchTask가 만든 카운터 스레드를 가져온다.
+            prev = searchTask.getCounterThread();
+            // searchTask 실행
+            searchTask = new SearchTask();
             searchTask.execute();
+            // 이전 카운터 쓰레드가 끝나기 전에 버튼 클릭을 했다면 쓰레드를 종료시켜준다.
+            if(prev != null && prev.runState)
+                prev.interrupt();
         }
+    }
+
+    // 뒤로가기 버튼 클릭 리스너
+    @Override
+    public void onBackPressed() {
+        // 실행중인 스레드 종료
+        if(searchTask.getCounterThread() != null)
+            searchTask.getCounterThread().interrupt();
+        super.onBackPressed();
     }
 
     // send 버튼 눌렀을 때 실행할 AsyncTask
     class SearchTask extends AsyncTask<Object,Void,Action>{
         String content;
+        CounterThread counterThread;
+
+        public CounterThread getCounterThread(){
+            return this.counterThread;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -82,6 +105,7 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
             editText.setEnabled(false);
             editText.setText(null);
             editText.setHint("현재는 입력할 수 없습니다.");
+
         }
 
         @Override
@@ -129,6 +153,10 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
             if(action.getResultType() == Action.SUCCESS){
                 Action temp = new Action().setType(Action.NORMAL).setPreFix(action.getPostFix());
                 actionList.add(temp);
+
+                // 카운트 다운 쓰레드를 실행한다.
+                counterThread = new CounterThread();
+                counterThread.start();
             }
             // 검색 실패 시 실행할 작업
             else{
@@ -144,15 +172,51 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
 
             // 리사이클러뷰의 스크롤을 가장 아래로 내려준다.
             mRecyclerView.scrollToPosition(actionList.size() - 1);
+
+
         }
 
         boolean compare(String a, String b){
             String pre = a.toUpperCase();
             String post = b.toUpperCase();
-            if(pre.equals(post))
-                return true;
-            else
-                return false;
+            return pre.equals(post);
+        }
+    }
+
+    // 카운트 다운 체크하는 AsyncTask
+    class CounterThread extends Thread{
+        public boolean runState = false;
+        int count = 10;
+
+        Runnable countDown = new Runnable() {
+            @Override
+            public void run() {
+                int last = actionList.size() - 1;
+                Action temp = actionList.get(last);
+                temp.setContent(Integer.toString(count));
+                actionList.set(last, temp);
+                mAdapter.notifyDataSetChanged();
+            }
+        };
+
+        @Override
+        public void run() {
+            try {
+                runState = true;
+                while (count > 0){
+                    runOnUiThread(countDown);
+                    Log.d(TAG, count+"초 남았습니다.");
+                    Thread.sleep(1000);
+                    count--;
+                }
+                Log.d(TAG, "정상 종료 되었습니다.");
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                runState = false;
+                Log.d(TAG, "비정상 종료 되었습니다.");
+            }
+
         }
     }
 }

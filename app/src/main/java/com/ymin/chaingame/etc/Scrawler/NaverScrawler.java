@@ -39,11 +39,14 @@ public class NaverScrawler {
             clip= dd.getElementsByClass("fnt_k05").get(0).text();
             substance.add(clip);
 
-            Elements fnt = dd.getElementsByClass("pad6").get(0).getElementsByClass("fnt_k22");
-            for(Element element : fnt){
-                if(element.tagName().equals("a")){
-                    clip =element.text();
-                    substance.add(clip);
+            Elements fnt = dd.getElementsByClass("pad6");
+            if(fnt.size() > 0){
+                Elements fnt_k22 = fnt.get(0).getElementsByClass("fnt_k22");
+                for(Element element : fnt_k22){
+                    if(element.tagName().equals("a")){
+                        clip =element.text();
+                        substance.add(clip);
+                    }
                 }
             }
 

@@ -228,7 +228,7 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             runState = false;
-            // Game Over 다이얼로그를 생성하고 실행
+            // Game Over 다이얼로그를 생성하고 실행ㅎㅎㅎ
             GameOverDialog gameOverDialog = new GameOverDialog(SingleGameActivity.this);
             gameOverDialog.setCancelable(false);
             gameOverDialog.show();

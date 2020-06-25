@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="261dp"
+    android:layout_height="250dp"
+    android:background="@color/white">
+    
+    <ImageView
+        android:layout_width="180dp"
+        android:layout_height="45dp"
+        android:src="@drawable/game_over_icon"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginBottom="10dp"/>
+
+    <TextView
+        android:id="@+id/reason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/warning"
+        android:layout_marginBottom="33dp"
+        android:text="- 실패 이유 -"/>
+
+    <ImageButton
+        android:id="@+id/result_page"
+        android:layout_width="223dp"
+        android:layout_height="44dp"
+        android:background="@drawable/dialog_result_button"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"/>
+
+    <ImageButton
+        android:id="@+id/main_page"
+        android:layout_width="223dp"
+        android:layout_height="44dp"
+        android:background="@drawable/dialog_main_button"
+        android:layout_gravity="center_horizontal"/>
+
+</LinearLayout>

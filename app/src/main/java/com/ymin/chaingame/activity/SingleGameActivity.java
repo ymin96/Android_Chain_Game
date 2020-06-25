@@ -1,5 +1,6 @@
 package com.ymin.chaingame.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ymin.chaingame.R;
 import com.ymin.chaingame.adapter.RecyclerActionViewAdapter;
+import com.ymin.chaingame.dialog.GameOverDialog;
 import com.ymin.chaingame.etc.Action;
 import com.ymin.chaingame.etc.Convert;
 import com.ymin.chaingame.etc.Scrawler.NaverScrawler;
@@ -33,7 +35,8 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
     RecyclerActionViewAdapter mAdapter = null;
     ArrayList<Action> actionList = new ArrayList<>();
     SearchTask searchTask = new SearchTask();
-    CounterThread prev;
+    CounterAsyncTask prev;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,12 +50,12 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
                         Convert.dpToPx(this, 335)
                 )
         ); // 리사이클러뷰의 자식 아이템들을 수평 정렬 시킴
-        mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        /*mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 mRecyclerView.scrollToPosition(actionList.size() - 1);
             }
-        }); // 화면이 Resize 되면 리사이클러뷰의 스크롤를 가장 아래로 바꿈
+        }); // 화면이 Resize 되면 리사이클러뷰의 스크롤를 가장 아래로 바꿈 */
 
         // 리사이클러뷰에 어뎁터 객체 지정
         mAdapter = new RecyclerActionViewAdapter(actionList);
@@ -68,13 +71,13 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
     public void onClick(View view) {
         if (view.getId() == R.id.action_submit) {
             // searchTask를 실행하기 전에 이전 searchTask가 만든 카운터 스레드를 가져온다.
-            prev = searchTask.getCounterThread();
+            prev = searchTask.getCounterAsyncTask();
             // searchTask 실행
             searchTask = new SearchTask();
-            searchTask.execute();
+            searchTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             // 이전 카운터 쓰레드가 끝나기 전에 버튼 클릭을 했다면 쓰레드를 종료시켜준다.
             if(prev != null && prev.runState)
-                prev.interrupt();
+                prev.cancel(true);
         }
     }
 
@@ -82,18 +85,18 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
     @Override
     public void onBackPressed() {
         // 실행중인 스레드 종료
-        if(searchTask.getCounterThread() != null)
-            searchTask.getCounterThread().interrupt();
+        if(searchTask.getCounterAsyncTask() != null)
+            searchTask.getCounterAsyncTask().cancel(true);
         super.onBackPressed();
     }
 
     // send 버튼 눌렀을 때 실행할 AsyncTask
     class SearchTask extends AsyncTask<Object,Void,Action>{
         String content;
-        CounterThread counterThread;
+        CounterAsyncTask counterAsyncTask;
 
-        public CounterThread getCounterThread(){
-            return this.counterThread;
+        public CounterAsyncTask getCounterAsyncTask() {
+            return counterAsyncTask;
         }
 
         @Override
@@ -155,12 +158,14 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
                 actionList.add(temp);
 
                 // 카운트 다운 쓰레드를 실행한다.
-                counterThread = new CounterThread();
-                counterThread.start();
+                counterAsyncTask = new CounterAsyncTask();
+                counterAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
             // 검색 실패 시 실행할 작업
             else{
-
+                GameOverDialog gameOverDialog = new GameOverDialog(SingleGameActivity.this);
+                gameOverDialog.setCancelable(false);
+                gameOverDialog.show();
             }
             // 화면 갱신
             mAdapter.notifyDataSetChanged();
@@ -184,39 +189,48 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
     }
 
     // 카운트 다운 체크하는 AsyncTask
-    class CounterThread extends Thread{
-        public boolean runState = false;
-        int count = 10;
-
-        Runnable countDown = new Runnable() {
-            @Override
-            public void run() {
-                int last = actionList.size() - 1;
-                Action temp = actionList.get(last);
-                temp.setContent(Integer.toString(count));
-                actionList.set(last, temp);
-                mAdapter.notifyDataSetChanged();
-            }
-        };
+    class CounterAsyncTask extends AsyncTask<Void, Integer, Void>{
+        public boolean runState = false;    // 현재 쓰레드가 실행중인지 체크해주는 변수
 
         @Override
-        public void run() {
-            try {
-                runState = true;
+        protected Void doInBackground(Void... voids) {
+            int count = 10;
+            runState = true;
+            try{
+                // 1초 간격으로 카운트
                 while (count > 0){
-                    runOnUiThread(countDown);
+                    if(isCancelled())
+                        return null;
+                    publishProgress(count);
                     Log.d(TAG, count+"초 남았습니다.");
                     Thread.sleep(1000);
                     count--;
                 }
-                Log.d(TAG, "정상 종료 되었습니다.");
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                runState = false;
-                Log.d(TAG, "비정상 종료 되었습니다.");
             }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
 
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            // 화면에 카운트 숫자를 갱신해준다.
+            int last = actionList.size() - 1;
+            Action temp = actionList.get(last);
+            temp.setContent(Integer.toString(values[0]));
+            actionList.set(last, temp);
+            mAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            runState = false;
+            GameOverDialog gameOverDialog = new GameOverDialog(SingleGameActivity.this);
+            gameOverDialog.setCancelable(false);
+            gameOverDialog.show();
         }
     }
 }

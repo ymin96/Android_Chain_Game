@@ -5,4 +5,7 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
+    <color name="warning">#FF2828</color>
+    <color name="yellow">#FFCF23</color>
+    <color name="PrimaryBlue">#4C5A72</color>
 </resources>

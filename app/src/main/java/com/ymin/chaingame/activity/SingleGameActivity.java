@@ -1,27 +1,19 @@
 package com.ymin.chaingame.activity;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ymin.chaingame.R;
 import com.ymin.chaingame.adapter.RecyclerActionViewAdapter;
-import com.ymin.chaingame.dialog.GameOverDialog;
 import com.ymin.chaingame.etc.Action;
 import com.ymin.chaingame.etc.Convert;
 import com.ymin.chaingame.etc.Scrawler.NaverScrawler;
@@ -163,9 +155,7 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
             }
             // 검색 실패 시 실행할 작업
             else{
-                GameOverDialog gameOverDialog = new GameOverDialog(SingleGameActivity.this);
-                gameOverDialog.setCancelable(false);
-                gameOverDialog.show();
+
             }
             // 화면 갱신
             mAdapter.notifyDataSetChanged();
@@ -224,14 +214,11 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
             mAdapter.notifyDataSetChanged();
         }
 
+        // 카운트 다운이 다 끝나면 할 작업
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             runState = false;
-            // Game Over 다이얼로그를 생성하고 실행ㅎㅎㅎ
-            GameOverDialog gameOverDialog = new GameOverDialog(SingleGameActivity.this);
-            gameOverDialog.setCancelable(false);
-            gameOverDialog.show();
         }
     }
 }

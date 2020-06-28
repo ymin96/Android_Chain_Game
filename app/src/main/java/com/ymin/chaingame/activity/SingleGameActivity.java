@@ -1,5 +1,6 @@
 package com.ymin.chaingame.activity;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -55,21 +57,32 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
 
         // 버튼 클릭 이벤트 등록
         ImageButton submit = (ImageButton) findViewById(R.id.action_submit);
+        Button resultPage = (Button) findViewById(R.id.result_page_button);
         submit.setOnClickListener(this);
+        resultPage.setOnClickListener(this);
     }
 
     // 버튼 클릭 이벤트
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.action_submit) {
-            // searchTask를 실행하기 전에 이전 searchTask가 만든 카운터 스레드를 가져온다.
-            prev = searchTask.getCounterAsyncTask();
-            // searchTask 실행
-            searchTask = new SearchTask();
-            searchTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            // 이전 카운터 쓰레드가 끝나기 전에 버튼 클릭을 했다면 쓰레드를 종료시켜준다.
-            if(prev != null && prev.runState)
-                prev.cancel(true);
+
+        switch (view.getId()){
+            case R.id.action_submit:
+                // searchTask를 실행하기 전에 이전 searchTask가 만든 카운터 스레드를 가져온다.
+                prev = searchTask.getCounterAsyncTask();
+                // searchTask 실행
+                searchTask = new SearchTask();
+                searchTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                // 이전 카운터 쓰레드가 끝나기 전에 버튼 클릭을 했다면 쓰레드를 종료시켜준다.
+                if(prev != null && prev.runState)
+                    prev.cancel(true);
+                break;
+            case R.id.result_page_button:
+                Intent intent = new Intent(getApplicationContext(), ResultPageActivity.class);
+                intent.putExtra("actionList", actionList);
+                startActivity(intent);
+                finish();
+                break;
         }
     }
 
@@ -155,7 +168,11 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
             }
             // 검색 실패 시 실행할 작업
             else{
-
+                // inputBar 을 사라지게 하고 Result Page 버튼을 보이게 한다.
+                LinearLayout inputBar = (LinearLayout) findViewById(R.id.input_bar);
+                inputBar.setVisibility(View.GONE);
+                Button resultPage = (Button) findViewById(R.id.result_page_button);
+                resultPage.setVisibility(View.VISIBLE);
             }
             // 화면 갱신
             mAdapter.notifyDataSetChanged();
@@ -219,6 +236,11 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             runState = false;
+            // inputBar 을 사라지게 하고 Result Page 버튼을 보이게 한다.
+            LinearLayout inputBar = (LinearLayout) findViewById(R.id.input_bar);
+            inputBar.setVisibility(View.GONE);
+            Button resultPage = (Button) findViewById(R.id.result_page_button);
+            resultPage.setVisibility(View.VISIBLE);
         }
     }
 }

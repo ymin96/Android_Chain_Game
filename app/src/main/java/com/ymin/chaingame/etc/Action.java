@@ -7,7 +7,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class Action {
+import java.io.Serializable;
+
+public class Action implements Serializable {
+    // 클래스 인스턴스 변수
+    private String preFix, postFix, content, subTitle, substance;
+
     // 아이템 타입을 구분하기 위한  변수
     public static final int NORMAL = 0;
     public static final int EXTEND = 1;
@@ -20,11 +25,10 @@ public class Action {
     public static final int SEARCH_FAIL = 13;
     private int resultType;
 
+    // 기본 생성자
     public Action() {
         this.type = NORMAL;  // 기본 축소 타입
     }
-
-    private String preFix, postFix, content, subTitle, substance;
 
     public String getPreFix() {
         return preFix;

@@ -2,6 +2,8 @@ package com.ymin.chaingame.dialog;
 
 import android.os.AsyncTask;
 
+import com.ymin.chaingame.matching.MatchingClient;
+
 public class CheckTypesTask extends AsyncTask<Void, Void, Void> {
 
     public void setProgressDialog(ProgressDialog progressDialog) {
@@ -13,13 +15,9 @@ public class CheckTypesTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
-        try {
-            for(int i=0;i<5;i++){
-                Thread.sleep(1000);
-            }
-        }catch (InterruptedException e){
-            e.printStackTrace();
-        }
+        MatchingClient client = new MatchingClient();
+        client.startClient();
+
         return null;
     }
 

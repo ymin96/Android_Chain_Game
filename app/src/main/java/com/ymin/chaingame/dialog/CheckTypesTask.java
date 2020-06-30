@@ -2,12 +2,12 @@ package com.ymin.chaingame.dialog;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.ymin.chaingame.client.ActionCreator;
 import com.ymin.chaingame.client.MatchingClient;
 
-public class CheckTypesTask extends AsyncTask<Void, Void, Void> {
-    MatchingClient client = new MatchingClient(this);
+public class CheckTypesTask extends AsyncTask<Void, Void, String> {
     ActionCreator actionCreator = new ActionCreator();
     MatchingClient matchingClient = new MatchingClient(this);
     ProgressDialog progressDialog;
@@ -20,11 +20,11 @@ public class CheckTypesTask extends AsyncTask<Void, Void, Void> {
 
 
     @Override
-    protected Void doInBackground(Void... voids) {
+    protected String doInBackground(Void... voids) {
 
-        String uuid = client.startClient();
+        String uuid = matchingClient.startClient();
 
-        return null;
+        return uuid;
     }
 
     @Override
@@ -35,9 +35,9 @@ public class CheckTypesTask extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
+    protected void onPostExecute(String s) {
         progressDialog.dismiss();
-        super.onPostExecute(aVoid);
+        Toast.makeText(context, s, Toast.LENGTH_LONG).show();
+        super.onPostExecute(s);
     }
-
 }

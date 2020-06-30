@@ -1,6 +1,7 @@
 package com.ymin.chaingame.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.content.AsyncTaskLoader;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.ymin.chaingame.R;
+import com.ymin.chaingame.dialog.CheckTypesTask;
 import com.ymin.chaingame.dialog.ProgressDialog;
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener {
@@ -32,8 +34,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         Intent intent;
         switch (view.getId()){
             case R.id.multiplay:
-                ProgressDialog dlg = new ProgressDialog(MainActivity.this);
-                dlg.show();
+                CheckTypesTask task = new CheckTypesTask();
+                task.setContext(MainActivity.this);
+                task.execute();
                 break;
             case R.id.singleplay:
                 intent = new Intent(getApplicationContext(), SingleGameActivity.class);

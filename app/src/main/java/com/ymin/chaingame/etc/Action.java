@@ -129,4 +129,38 @@ public class Action implements Serializable {
         }
         return null;
     }
+
+    public static JSONObject toJsonObject(Action action){
+        JSONObject properties = new JSONObject();
+        properties.put("content", action.getContent());
+        properties.put("prefix", action.getPreFix());
+        properties.put("postfix", action.getPostFix());
+        properties.put("sub_title", action.getSubTitle());
+        properties.put("return_type", action.getResultType());
+        properties.put("subStance", action.getSubstance());
+        return properties;
+    }
+
+    public static Action JsonToAction(JSONObject jsonData){
+
+        String prefix, postfix, content, subTitle, subStance;
+        int resultType;
+
+        content = (String) jsonData.get("content");
+        prefix =(String) jsonData.get("prefix");
+        postfix =(String) jsonData.get("postfix");
+        subTitle = (String)jsonData.get("sub_title");
+        resultType = Math.toIntExact((Long)jsonData.get("return_type"));
+        subStance = (String)jsonData.get("subStance");
+
+
+        return new Action()
+                .setPreFix(prefix)
+                .setPostFix(postfix)
+                .setContent(content)
+                .setType(EXTEND)
+                .setSubTitle(subTitle)
+                .setSubstance(subStance)
+                .setResultType(resultType);
+    }
 }

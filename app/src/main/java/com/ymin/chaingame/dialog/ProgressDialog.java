@@ -15,12 +15,10 @@ import com.ymin.chaingame.client.ActionCreator;
 import com.ymin.chaingame.client.MatchingClient;
 
 public class ProgressDialog extends Dialog {
-    Context context;
     ActionCreator actionCreator = new ActionCreator();
 
     public ProgressDialog(@NonNull Context context, final MatchingClient client) {
         super(context);
-        this.context = context;
         setContentView(R.layout.matching_progress_dialog);
 
         ImageButton cancelButton = (ImageButton) findViewById(R.id.matching_dlg_cancel);

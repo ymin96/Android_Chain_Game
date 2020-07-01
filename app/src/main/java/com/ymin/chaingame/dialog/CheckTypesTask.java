@@ -1,14 +1,16 @@
 package com.ymin.chaingame.dialog;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.ymin.chaingame.activity.MultipleGameActivity;
 import com.ymin.chaingame.client.ActionCreator;
+import com.ymin.chaingame.client.GameClient;
 import com.ymin.chaingame.client.MatchingClient;
 
 public class CheckTypesTask extends AsyncTask<Void, Void, String> {
-    ActionCreator actionCreator = new ActionCreator();
     MatchingClient matchingClient = new MatchingClient(this);
     ProgressDialog progressDialog;
     Context context;
@@ -16,15 +18,6 @@ public class CheckTypesTask extends AsyncTask<Void, Void, String> {
 
     public void setContext(Context context){
         this.context = context;
-    }
-
-
-    @Override
-    protected String doInBackground(Void... voids) {
-
-        String uuid = matchingClient.startClient();
-
-        return uuid;
     }
 
     @Override
@@ -35,9 +28,24 @@ public class CheckTypesTask extends AsyncTask<Void, Void, String> {
     }
 
     @Override
-    protected void onPostExecute(String s) {
+    protected String doInBackground(Void... voids) {
+
+        String uuid = matchingClient.startClient();
+
+        return uuid;
+    }
+
+
+
+    @Override
+    protected void onPostExecute(String uuid) {
         progressDialog.dismiss();
-        Toast.makeText(context, s, Toast.LENGTH_LONG).show();
-        super.onPostExecute(s);
+        GameClient gameClient = new GameClient();
+        gameClient.startClient();
+
+        Intent intent = new Intent(context, MultipleGameActivity.class);
+        intent.putExtra("uuid", uuid);
+        context.startActivity(intent);
+        super.onPostExecute(uuid);
     }
 }

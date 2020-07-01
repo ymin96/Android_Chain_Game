@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.content.AsyncTaskLoader;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -24,8 +25,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         ImageButton multi, single, translate;
         multi = (ImageButton) findViewById(R.id.multiplay);
         single = (ImageButton) findViewById(R.id.singleplay);
+        translate = (ImageButton) findViewById(R.id.translate);
         multi.setOnClickListener(this);
         single.setOnClickListener(this);
+        translate.setOnClickListener(this);
     }
 
     @Override
@@ -43,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 startActivity(intent);
                 break;
             case R.id.translate:
+                intent = new Intent(getApplicationContext(), TranslateActivity.class);
+                startActivity(intent);
                 break;
         }
     }

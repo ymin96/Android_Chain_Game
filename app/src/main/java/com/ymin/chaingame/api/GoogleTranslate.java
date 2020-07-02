@@ -1,6 +1,9 @@
 package com.ymin.chaingame.api;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.ymin.chaingame.R;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -10,9 +13,9 @@ import org.json.simple.parser.ParseException;
 public class GoogleTranslate extends BaseTranslate {
     private static final String TAG = "Translate_Google";
 
-    public GoogleTranslate(){
-        String apiKey = "AIzaSyDY-TZ625qhZ40Ge3nmJ_jc2NYBdwV8F7w";
-        this.apiURL = "https://translation.googleapis.com/language/translate/v2";
+    public GoogleTranslate(Context context){
+        String apiKey = context.getString(R.string.google);
+        this.apiURL = "https://translation.googleapis.com/language/translate/v2" ;
         this.requestMethod = "POST";
         this.postParams = "source=ko&target=en&key="+apiKey+"&q=";
     }

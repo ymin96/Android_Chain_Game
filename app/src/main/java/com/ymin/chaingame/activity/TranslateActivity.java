@@ -53,7 +53,7 @@ public class TranslateActivity extends AppCompatActivity implements Button.OnCli
 
         @Override
         protected String doInBackground(String... strings) {
-            PapagoTranslate papagoTranslate = new PapagoTranslate();
+            PapagoTranslate papagoTranslate = new PapagoTranslate(TranslateActivity.this);
             String result = papagoTranslate.run(strings[0]);
             return result;
         }
@@ -70,7 +70,7 @@ public class TranslateActivity extends AppCompatActivity implements Button.OnCli
 
         @Override
         protected String doInBackground(String... strings) {
-            KakaoTranslate kakaoTranslate = new KakaoTranslate();
+            KakaoTranslate kakaoTranslate = new KakaoTranslate(TranslateActivity.this);
             String result = kakaoTranslate.run(strings[0]);
             return result;
         }
@@ -87,7 +87,7 @@ public class TranslateActivity extends AppCompatActivity implements Button.OnCli
 
         @Override
         protected String doInBackground(String... strings) {
-            GoogleTranslate googleTranslate = new GoogleTranslate();
+            GoogleTranslate googleTranslate = new GoogleTranslate(TranslateActivity.this);
             String result = googleTranslate.run(strings[0]);
             return result;
         }

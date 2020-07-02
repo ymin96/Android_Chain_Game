@@ -1,6 +1,9 @@
 package com.ymin.chaingame.api;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.ymin.chaingame.R;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,9 +16,9 @@ import java.util.Map;
 public class KakaoTranslate extends BaseTranslate {
     private static final String TAG = "Translate_Kakao";
 
-    public KakaoTranslate(){
+    public KakaoTranslate(Context context){
         Map<String, String> requestHeaders = new HashMap<>();
-        String appKey = "KakaoAK 81d9ba0003608c4395a95639343e8c11";// 애플리케이션 네이티브 앱키
+        String appKey = context.getString(R.string.kakako);// 애플리케이션 네이티브 앱키
         requestHeaders.put("Authorization", appKey);
         this.requestHeaders = requestHeaders;
         this.apiURL = "https://kapi.kakao.com/v1/translation/translate";

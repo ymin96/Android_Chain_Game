@@ -1,6 +1,9 @@
 package com.ymin.chaingame.api;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.ymin.chaingame.R;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,10 +16,10 @@ import java.util.Map;
 public class PapagoTranslate extends BaseTranslate{
     private static final String TAG = "Translate_Papago";
 
-    public PapagoTranslate(){
+    public PapagoTranslate(Context context){
         Map<String, String> requestHeaders = new HashMap<>();
-        String clientId = "8rctGw89EicTuRcJaNsa";//애플리케이션 클라이언트 아이디값";
-        String clientSecret = "ZafON0T49p";//애플리케이션 클라이언트 시크릿값";
+        String clientId = context.getString(R.string.papago_clientID);//애플리케이션 클라이언트 아이디값";
+        String clientSecret = context.getString(R.string.papago_clientSecret);//애플리케이션 클라이언트 시크릿값";
         requestHeaders.put("X-Naver-Client-Id", clientId);
         requestHeaders.put("X-Naver-Client-Secret", clientSecret);
         this.requestHeaders = requestHeaders;

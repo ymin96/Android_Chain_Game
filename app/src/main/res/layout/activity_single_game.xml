@@ -34,7 +34,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/edittext_flat"/>
+            android:background="@drawable/edittext_flat"
+            android:hint="아무 단어나 입력하면 시작합니다."/>
 
         <ImageButton
             android:id="@+id/action_submit"

@@ -28,14 +28,13 @@
                     android:scaleType="fitXY"/>
 
                 <TextView
+                    android:id="@+id/rank"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textSize="72sp"
                     android:textStyle="bold"
-                    android:paddingEnd="20dp"
-                    android:textColor="@color/yellow"
-                    android:text="# 20"/>
+                    android:textColor="@color/yellow"/>
             </FrameLayout>
 
             <androidx.recyclerview.widget.RecyclerView

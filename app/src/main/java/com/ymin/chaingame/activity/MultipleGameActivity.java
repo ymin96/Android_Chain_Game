@@ -35,10 +35,10 @@ public class MultipleGameActivity extends AppCompatActivity implements Button.On
     public RecyclerView mRecyclerView = null;
     public RecyclerActionViewAdapter mAdapter = null;
     public ArrayList<Action> actionList = new ArrayList<>();
+    public boolean win = false;
     GameClient gameClient = new GameClient();
     ActionCreator actionCreator = new ActionCreator();
     SearchTask searchTask = new SearchTask();
-    GameClient.CounterAsyncTask prev;
     String uuid;
 
     @Override
@@ -49,8 +49,10 @@ public class MultipleGameActivity extends AppCompatActivity implements Button.On
         // 인텐트로부터 데이터를 받아온다.
         Intent intent = getIntent();
         uuid = intent.getStringExtra("uuid");
+        // GameClient 세팅
         gameClient.setActivity(this);
         gameClient.startClient();
+        gameClient.setUuid(uuid);
         gameClient.send(actionCreator.connectRoom(uuid));
 
         // 리사이클러뷰 세팅
@@ -84,7 +86,10 @@ public class MultipleGameActivity extends AppCompatActivity implements Button.On
                 break;
             case R.id.result_page_button:
                 Intent intent = new Intent(getApplicationContext(), ResultPageActivity.class);
+                // 가장 마지막에 실패한 데이터는 지워준다.
+                actionList.remove(actionList.size() -1);
                 intent.putExtra("actionList", actionList);
+                intent.putExtra("win", win);
                 startActivity(intent);
                 finish();
                 break;

@@ -27,6 +27,12 @@ public class GameClient implements Serializable {
     private static final String TAG = "GameClient";
     SocketChannel socketChannel;
     Activity activity = null;
+    String uuid = null;
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
     public CounterAsyncTask counterAsyncTask = null;
 
     public CounterAsyncTask getCounterAsyncTask() {
@@ -132,6 +138,7 @@ public class GameClient implements Serializable {
             case "RECEIVE_ACTION":{
                 final boolean turn = (boolean) payload.get("turn");
                 final Action action = Action.JsonToAction((JSONObject)payload.get("action"));
+                // 진행중인 counterAsyncTask 가 있다면 종료시켜 준다.
                 if(counterAsyncTask != null && counterAsyncTask.runState)
                     counterAsyncTask.cancel(true);
                 activity.runOnUiThread(new Runnable() {
@@ -140,7 +147,7 @@ public class GameClient implements Serializable {
                         // 가장 뒤에 있는 NORMAL 타입 액션을 지워준다.
                         if (((MultipleGameActivity)activity).actionList.size() > 0)
                             ((MultipleGameActivity)activity).actionList.remove(((MultipleGameActivity)activity).actionList.size()-1);
-                        // doInBackground 에서 전달받은 액션을 추가
+                        // 서버 에서 전달받은 액션을 추가
                         ((MultipleGameActivity)activity).actionList.add(action);
 
                         // 검색 성공 시 실행할 작업
@@ -149,16 +156,8 @@ public class GameClient implements Serializable {
                             ((MultipleGameActivity) activity).actionList.add(temp);
 
                             // 카운트 다운 쓰레드를 실행한다.
-                            counterAsyncTask = new CounterAsyncTask();
+                            counterAsyncTask = new CounterAsyncTask(turn);
                             counterAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        }
-                        // 검색 실패 시 실행할 작업
-                        else{
-                            // inputBar 을 사라지게 하고 Result Page 버튼을 보이게 한다.
-                            LinearLayout inputBar = (LinearLayout) activity.findViewById(R.id.input_bar);
-                            inputBar.setVisibility(View.GONE);
-                            Button resultPage = (Button) activity.findViewById(R.id.result_page_button);
-                            resultPage.setVisibility(View.VISIBLE);
                         }
                         // 화면 갱신
                         ((MultipleGameActivity)activity).mAdapter.notifyDataSetChanged();
@@ -178,6 +177,36 @@ public class GameClient implements Serializable {
                 });
                 break;
             }
+            // 실패 action 을 받고 게임을 종료한다.
+            case "RECEIVE_FAIL_ACTION": {
+
+                ((MultipleGameActivity)activity).win = (boolean)payload.get("win");
+
+                final Action action = Action.JsonToAction((JSONObject) payload.get("action"));
+                // 진행중인 counterAsyncTask 가 있다면 종료시켜 준다.
+                if(counterAsyncTask != null && counterAsyncTask.runState)
+                    counterAsyncTask.cancel(true);
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 가장 뒤에 있는 NORMAL 타입 액션을 지워준다.
+                        if (((MultipleGameActivity) activity).actionList.size() > 0)
+                            ((MultipleGameActivity) activity).actionList.remove(((MultipleGameActivity) activity).actionList.size() - 1);
+                        // 서버 에서 전달받은 액션을 추가
+                        ((MultipleGameActivity) activity).actionList.add(action);
+
+                        // inputBar 을 사라지게 하고 Result Page 버튼을 보이게 한다.
+                        LinearLayout inputBar = (LinearLayout) activity.findViewById(R.id.input_bar);
+                        inputBar.setVisibility(View.GONE);
+                        Button resultPage = (Button) activity.findViewById(R.id.result_page_button);
+                        resultPage.setVisibility(View.VISIBLE);
+
+                        // 리사이클러뷰의 스크롤을 가장 아래로 내려준다.
+                        ((MultipleGameActivity) activity).mRecyclerView.scrollToPosition(((MultipleGameActivity) activity).actionList.size() - 1);
+                    }
+                });
+                break;
+            }
         }
     }
 
@@ -185,6 +214,13 @@ public class GameClient implements Serializable {
     // 카운트 다운 체크하는 AsyncTask
     public class CounterAsyncTask extends AsyncTask<Void, Integer, Void> {
         public boolean runState = false;    // 현재 쓰레드가 실행중인지 체크해주는 변수
+        ActionCreator actionCreator = new ActionCreator();
+        boolean turn = false;
+
+        public CounterAsyncTask(boolean turn){
+            super();
+            this.turn = turn;
+        }
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -223,11 +259,28 @@ public class GameClient implements Serializable {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             runState = false;
-            /* inputBar 을 사라지게 하고 Result Page 버튼을 보이게 한다.
-            LinearLayout inputBar = (LinearLayout) activity.findViewById(R.id.input_bar);
-            inputBar.setVisibility(View.GONE);
-            Button resultPage = (Button) activity.findViewById(R.id.result_page_button);
-            resultPage.setVisibility(View.VISIBLE);*/
+            // 자신의 차례라면 서버에 시간 초과 액션을 보내준다.(모든 클라이언트가 데이터를 보내는것을 방지)
+            if(turn){
+
+                // 실패한 데이터를 만들어 준다.
+                Action failAction = new Action()
+                        .setContent("0")
+                        .setType(Action.EXTEND)
+                        .setResultType(Action.TIME_OUT)
+                        .setSubTitle("시간 초과")
+                        .setSubstance("제한된 시간 안에 작성하지 못했습니다.");
+
+                // 가장 뒤에 있는 액션을 가져온다.
+                if (((MultipleGameActivity)activity).actionList.size() > 0) {
+                    Action lastAction = ((MultipleGameActivity) activity).actionList.get(((MultipleGameActivity) activity).actionList.size() - 1);
+                    failAction.setPreFix(lastAction.getPreFix());
+                }
+
+                // 서버에 데이터를 전송한다.
+                JSONObject jsonAction = Action.toJsonObject(failAction);
+                send(actionCreator.sendAction(jsonAction, uuid));
+            }
+
         }
     }
 }

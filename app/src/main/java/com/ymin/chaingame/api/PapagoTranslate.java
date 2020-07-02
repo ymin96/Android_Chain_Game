@@ -1,5 +1,12 @@
 package com.ymin.chaingame.api;
 
+import android.util.Log;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,4 +25,22 @@ public class PapagoTranslate extends BaseTranslate{
         this.requestMethod = "POST";
     }
 
+    @Override
+    String parseResponse(String response) {
+        JSONParser parser = new JSONParser();
+        try {
+            JSONObject object = (JSONObject) parser.parse(response);
+            if(object.get("error") == null) {
+                JSONObject message = (JSONObject)object.get("message");
+                JSONObject result = (JSONObject)message.get("result");
+                String translatedText = (String) result.get("translatedText");
+                Log.d(TAG, "parseResponse: "+translatedText);
+                return translatedText;
+            }
+        }catch (ParseException e){
+            return "번역 오류가 발생했습니다.";
+        }
+
+        return "Error";
+    }
 }

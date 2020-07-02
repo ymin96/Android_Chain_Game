@@ -12,13 +12,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ymin.chaingame.R;
+import com.ymin.chaingame.api.GoogleTranslate;
 import com.ymin.chaingame.api.KakaoTranslate;
 import com.ymin.chaingame.api.PapagoTranslate;
+
+import org.w3c.dom.Text;
 
 
 public class TranslateActivity extends AppCompatActivity implements Button.OnClickListener{
     EditText editQuery;
-
+    TextView google, papago, kakao;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,11 +38,12 @@ public class TranslateActivity extends AppCompatActivity implements Button.OnCli
         editQuery = (EditText) findViewById (R.id.edit_text);
         switch (view.getId()){
             case R.id.translate:
-                TextView papago = (TextView)findViewById(R.id.papago);
                 PapagoAsyncTask papagoAsyncTask = new PapagoAsyncTask();
                 papagoAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,editQuery.getText().toString());
                 KakaoAsyncTask kakaoAsyncTask = new KakaoAsyncTask();
                 kakaoAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,editQuery.getText().toString());
+                GoogleAsyncTask googleAsyncTask = new GoogleAsyncTask();
+                googleAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, editQuery.getText().toString());
                 break;
         }
     }
@@ -50,13 +54,15 @@ public class TranslateActivity extends AppCompatActivity implements Button.OnCli
         @Override
         protected String doInBackground(String... strings) {
             PapagoTranslate papagoTranslate = new PapagoTranslate();
-            papagoTranslate.run(strings[0]);
-            return null;
+            String result = papagoTranslate.run(strings[0]);
+            return result;
         }
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            papago = (TextView)findViewById(R.id.papago_text);
+            papago.setText(s);
         }
     }
 
@@ -65,13 +71,32 @@ public class TranslateActivity extends AppCompatActivity implements Button.OnCli
         @Override
         protected String doInBackground(String... strings) {
             KakaoTranslate kakaoTranslate = new KakaoTranslate();
-            kakaoTranslate.run(strings[0]);
-            return null;
+            String result = kakaoTranslate.run(strings[0]);
+            return result;
         }
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            kakao = (TextView)findViewById(R.id.kakao_text);
+            kakao.setText(s);
+        }
+    }
+
+    class GoogleAsyncTask extends AsyncTask<String, Void, String>{
+
+        @Override
+        protected String doInBackground(String... strings) {
+            GoogleTranslate googleTranslate = new GoogleTranslate();
+            String result = googleTranslate.run(strings[0]);
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            google = (TextView) findViewById(R.id.google_text);
+            google.setText(s);
         }
     }
 }

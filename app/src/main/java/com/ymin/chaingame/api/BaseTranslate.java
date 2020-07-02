@@ -15,7 +15,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BaseTranslate {
+abstract class BaseTranslate {
     private static final String TAG = "BaseTranslate";
 
     Map<String, String> requestHeaders;
@@ -23,7 +23,7 @@ public class BaseTranslate {
     String postParams;
     String requestMethod;
 
-    public void run(String query){
+    public String run(String query){
 
         String text;
         try {
@@ -35,7 +35,7 @@ public class BaseTranslate {
         String responseBody = post(apiURL, requestHeaders, text);
 
         Log.d(TAG, "run: "+responseBody);
-
+        return parseResponse(responseBody);
     }
 
     private String post(String apiURL, Map<String,String>requestHeaders, String text){
@@ -45,8 +45,10 @@ public class BaseTranslate {
 
         try {
             con.setRequestMethod(requestMethod);
-            for(Map.Entry<String, String> header :requestHeaders.entrySet()) {
-                con.setRequestProperty(header.getKey(), header.getValue());
+            if(requestHeaders != null){
+                for(Map.Entry<String, String> header :requestHeaders.entrySet()) {
+                    con.setRequestProperty(header.getKey(), header.getValue());
+                }
             }
 
             con.setDoOutput(true);
@@ -95,4 +97,6 @@ public class BaseTranslate {
             throw new RuntimeException("API 응답을 읽는데 실패했습니다.", e);
         }
     }
+
+    abstract String parseResponse(String response);
 }

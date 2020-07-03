@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -67,22 +68,32 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
     public void onClick(View view) {
 
         switch (view.getId()){
-            case R.id.action_submit:
-                // searchTask를 실행하기 전에 이전 searchTask가 만든 카운터 스레드를 가져온다.
-                prev = searchTask.getCounterAsyncTask();
-                // searchTask 실행
-                searchTask = new SearchTask();
-                searchTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                // 이전 카운터 쓰레드가 끝나기 전에 버튼 클릭을 했다면 쓰레드를 종료시켜준다.
-                if(prev != null && prev.runState)
-                    prev.cancel(true);
+            case R.id.action_submit: {
+                String content = ((EditText)findViewById(R.id.action_input)).getText().toString();
+                // input 값의 공백을 검사하여 Toast 를 띄워준다.
+                if(!content.trim().equals("")) {
+                    // searchTask를 실행하기 전에 이전 searchTask가 만든 카운터 스레드를 가져온다.
+                    prev = searchTask.getCounterAsyncTask();
+                    // searchTask 실행
+                    searchTask = new SearchTask();
+                    searchTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    // 이전 카운터 쓰레드가 끝나기 전에 버튼 클릭을 했다면 쓰레드를 종료시켜준다.
+                    if (prev != null && prev.runState)
+                        prev.cancel(true);
+                }
+                else
+                    Toast.makeText(this, "단어를 입력해주세요", Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.result_page_button:
+            }
+            case R.id.result_page_button: {
                 Intent intent = new Intent(getApplicationContext(), ResultPageActivity.class);
+                actionList.remove(actionList.size() - 1);
                 intent.putExtra("actionList", actionList);
+                intent.putExtra("rank", Integer.toString(actionList.size()));
                 startActivity(intent);
                 finish();
                 break;
+            }
         }
     }
 
@@ -107,12 +118,14 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // Edittext 와 Button 을 비활성화 한다.
             EditText editText = (EditText) findViewById(R.id.action_input);
             content = editText.getText().toString();
+            // Edittext 와 Button 을 비활성화 한다.
             editText.setEnabled(false);
             editText.setText(null);
             editText.setHint("현재는 입력할 수 없습니다.");
+            ImageButton submit = (ImageButton) findViewById(R.id.action_submit);
+            submit.setClickable(false);
 
         }
 
@@ -177,10 +190,12 @@ public class SingleGameActivity extends AppCompatActivity implements Button.OnCl
             // 화면 갱신
             mAdapter.notifyDataSetChanged();
 
-            // EditText 를 다시 선택할 수 있게 만들어준다.
+            // input_bar, submit 를 다시 선택할 수 있게 만들어준다.
             EditText editText = (EditText) findViewById(R.id.action_input);
             editText.setEnabled(true);
             editText.setHint(null);
+            ImageButton submit = (ImageButton)findViewById(R.id.action_submit);
+            submit.setClickable(true);
 
             // 리사이클러뷰의 스크롤을 가장 아래로 내려준다.
             mRecyclerView.scrollToPosition(actionList.size() - 1);

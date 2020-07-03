@@ -13,7 +13,7 @@ import org.json.simple.parser.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class KakaoTranslate extends BaseTranslate {
+public class KakaoTranslate extends ParentTranslate implements BaseTranslate{
     private static final String TAG = "Translate_Kakao";
 
     public KakaoTranslate(Context context){
@@ -46,5 +46,15 @@ public class KakaoTranslate extends BaseTranslate {
         }
 
         return "Error";
+    }
+
+    @Override
+    public void setKo_To_En() {
+        this.postParams = "src_lang=kr&target_lang=en&query=";
+    }
+
+    @Override
+    public void setEn_to_Ko() {
+        this.postParams = "src_lang=en&target_lang=kr&query=";
     }
 }

@@ -10,11 +10,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class GoogleTranslate extends BaseTranslate {
+public class GoogleTranslate extends ParentTranslate implements BaseTranslate{
     private static final String TAG = "Translate_Google";
-
+    String apiKey;
     public GoogleTranslate(Context context){
-        String apiKey = context.getString(R.string.google);
+        apiKey = context.getString(R.string.google);
         this.apiURL = "https://translation.googleapis.com/language/translate/v2" ;
         this.requestMethod = "POST";
         this.postParams = "source=ko&target=en&key="+apiKey+"&q=";
@@ -39,5 +39,15 @@ public class GoogleTranslate extends BaseTranslate {
         }
 
         return "Error";
+    }
+
+    @Override
+    public void setKo_To_En() {
+        this.postParams = "source=ko&target=en&key="+this.apiKey+"&q=";
+    }
+
+    @Override
+    public void setEn_to_Ko() {
+        this.postParams = "source=en&target=ko&key="+this.apiKey+"&q=";
     }
 }

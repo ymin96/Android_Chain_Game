@@ -75,7 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="Create By Kim Yong Hwan"
+            android:text="Create By Lee Chang Hyeon"
             android:textColor="#fff"
             android:textSize="14dp"
             android:textStyle="bold"

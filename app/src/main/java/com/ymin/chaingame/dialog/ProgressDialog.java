@@ -27,7 +27,7 @@ public class ProgressDialog extends Dialog {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                client.send(actionCreator.connectBreak());
+                client.send(actionCreator.matchingConnectBreak());
                 dismiss();
             }
         });

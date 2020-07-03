@@ -32,4 +32,12 @@ public class ActionCreator {
         return result.toJSONString();
     }
 
+    public String matchingConnectBreak(){
+        JSONObject result = new JSONObject();
+        result.put("type", "MATCHING_CONNECT_BREAK");
+        JSONObject payload = new JSONObject();
+        result.put("payload", payload);
+        return result.toJSONString();
+    }
+
 }

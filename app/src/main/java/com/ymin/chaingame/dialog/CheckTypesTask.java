@@ -13,6 +13,7 @@ import com.ymin.chaingame.client.MatchingClient;
 public class CheckTypesTask extends AsyncTask<Void, Void, String> {
     MatchingClient matchingClient = new MatchingClient(this);
     ProgressDialog progressDialog;
+    ActionCreator actionCreator = new ActionCreator();
     Context context;
 
 
@@ -40,8 +41,8 @@ public class CheckTypesTask extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(String uuid) {
         progressDialog.dismiss();
-        GameClient gameClient = new GameClient();
-        gameClient.startClient();
+        // 매칭 서버 연결 해제
+        matchingClient.send(actionCreator.matchingConnectBreak());
 
         Intent intent = new Intent(context, MultipleGameActivity.class);
         intent.putExtra("uuid", uuid);

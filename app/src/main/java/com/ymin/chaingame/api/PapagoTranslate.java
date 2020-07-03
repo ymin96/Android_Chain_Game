@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.ymin.chaingame.R;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -13,7 +12,7 @@ import org.json.simple.parser.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PapagoTranslate extends BaseTranslate{
+public class PapagoTranslate extends ParentTranslate implements BaseTranslate{
     private static final String TAG = "Translate_Papago";
 
     public PapagoTranslate(Context context){
@@ -45,5 +44,15 @@ public class PapagoTranslate extends BaseTranslate{
         }
 
         return "Error";
+    }
+
+    @Override
+    public void setKo_To_En() {
+        this.postParams = "source=ko&target=en&text=";
+    }
+
+    @Override
+    public void setEn_to_Ko() {
+        this.postParams = "source=en&target=ko&text=";
     }
 }

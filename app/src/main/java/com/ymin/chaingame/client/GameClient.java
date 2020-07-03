@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.ymin.chaingame.R;
@@ -28,6 +30,7 @@ public class GameClient implements Serializable {
     SocketChannel socketChannel;
     Activity activity = null;
     String uuid = null;
+    ActionCreator actionCreator = new ActionCreator();
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
@@ -126,9 +129,18 @@ public class GameClient implements Serializable {
                     this.activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            // EditText 를 사용 가능하게 만들어준다.
                             EditText editText = (EditText) activity.findViewById(R.id.action_input);
                             editText.setEnabled(true);
                             editText.setHint(null);
+
+                            // submit 버튼을 사용 가능하게 만들어준다.
+                            ImageButton submit = (ImageButton) activity.findViewById(R.id.action_submit);
+                            submit.setClickable(true);
+
+                            // 상단 status 이미지를 변경해준다.
+                            ImageView status = (ImageView)activity.findViewById(R.id.player_status);
+                            status.setImageResource(R.drawable.status_able_me);
                         }
                     });
                 }
@@ -144,6 +156,7 @@ public class GameClient implements Serializable {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         // 가장 뒤에 있는 NORMAL 타입 액션을 지워준다.
                         if (((MultipleGameActivity)activity).actionList.size() > 0)
                             ((MultipleGameActivity)activity).actionList.remove(((MultipleGameActivity)activity).actionList.size()-1);
@@ -168,6 +181,12 @@ public class GameClient implements Serializable {
                             EditText editText = (EditText) activity.findViewById(R.id.action_input);
                             editText.setEnabled(true);
                             editText.setHint(null);
+                            // submit 을 클릭할 수 있게 만들어준다.
+                            ImageButton submit = (ImageButton)activity.findViewById(R.id.action_submit);
+                            submit.setClickable(true);
+                            // 상단의 status 를 활성화 시켜준다.
+                            ImageView status = (ImageView)activity.findViewById(R.id.player_status);
+                            status.setImageResource(R.drawable.status_able_me);
                         }
 
 
@@ -203,6 +222,9 @@ public class GameClient implements Serializable {
 
                         // 리사이클러뷰의 스크롤을 가장 아래로 내려준다.
                         ((MultipleGameActivity) activity).mRecyclerView.scrollToPosition(((MultipleGameActivity) activity).actionList.size() - 1);
+
+                        // 서버에 접속 해제 요청 매시지지를 보내준다.
+                       send(actionCreator.connectClose(uuid));
                     }
                 });
                 break;
@@ -210,11 +232,9 @@ public class GameClient implements Serializable {
         }
     }
 
-
     // 카운트 다운 체크하는 AsyncTask
     public class CounterAsyncTask extends AsyncTask<Void, Integer, Void> {
         public boolean runState = false;    // 현재 쓰레드가 실행중인지 체크해주는 변수
-        ActionCreator actionCreator = new ActionCreator();
         boolean turn = false;
 
         public CounterAsyncTask(boolean turn){

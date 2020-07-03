@@ -8,7 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -79,20 +81,29 @@ public class MultipleGameActivity extends AppCompatActivity implements Button.On
     // 버튼 클릭 이벤트 리스너
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.action_submit:
-                // searchTask 실행
-                searchTask = new SearchTask();
-                searchTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                break;
-            case R.id.result_page_button:
+            case R.id.action_submit: {
+                String content = ((EditText)findViewById(R.id.action_input)).getText().toString();
+                // input 값의 공백을 검사하여 Toast 를 띄워준다.
+                if(!content.trim().equals("")) {
+                    // searchTask 실행
+                    searchTask = new SearchTask();
+                    searchTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    break;
+                }
+                else
+                    Toast.makeText(this, "단어를 입력해주세요", Toast.LENGTH_SHORT).show();
+            }
+            case R.id.result_page_button: {
                 Intent intent = new Intent(getApplicationContext(), ResultPageActivity.class);
                 // 가장 마지막에 실패한 데이터는 지워준다.
-                actionList.remove(actionList.size() -1);
+                actionList.remove(actionList.size() - 1);
                 intent.putExtra("actionList", actionList);
-                intent.putExtra("win", win);
+                String rank = (win ? "Win" : "Lose");
+                intent.putExtra("rank", rank);
                 startActivity(intent);
                 finish();
                 break;
+            }
         }
     }
 
@@ -111,12 +122,16 @@ public class MultipleGameActivity extends AppCompatActivity implements Button.On
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // Edittext 와 Button 을 비활성화 한다.
+            // input_bar, submit, status 를 비활성화 한다.
             EditText editText = (EditText) findViewById(R.id.action_input);
             content = editText.getText().toString();
             editText.setEnabled(false);
             editText.setText(null);
             editText.setHint("현재는 입력할 수 없습니다.");
+            ImageButton submit = (ImageButton)findViewById(R.id.action_submit);
+            submit.setClickable(false);
+            ImageView status = (ImageView)findViewById(R.id.player_status);
+            status.setImageResource(R.drawable.status_disable_me);
         }
 
         @Override

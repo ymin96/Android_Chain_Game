@@ -53,9 +53,9 @@ public class MultipleGameActivity extends AppCompatActivity implements Button.On
         uuid = intent.getStringExtra("uuid");
         // GameClient 세팅
         gameClient.setActivity(this);
-        gameClient.startClient();
         gameClient.setUuid(uuid);
-        gameClient.send(actionCreator.connectRoom(uuid));
+        gameClient.startClient();
+
 
         // 리사이클러뷰 세팅
         mRecyclerView = findViewById(R.id.recycler);
@@ -73,7 +73,9 @@ public class MultipleGameActivity extends AppCompatActivity implements Button.On
 
         // 버튼 클릭 이벤트 등록
         ImageButton submit = (ImageButton) findViewById(R.id.action_submit);
+        Button resultPage = (Button) findViewById(R.id.result_page_button);
         submit.setOnClickListener(this);
+        resultPage.setOnClickListener(this);
     }
 
 

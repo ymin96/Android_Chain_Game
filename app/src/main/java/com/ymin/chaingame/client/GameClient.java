@@ -57,6 +57,7 @@ public class GameClient implements Serializable {
                 } catch (IOException e) {
                     if(socketChannel.isOpen()){stopClient();}
                 }
+                send(actionCreator.connectRoom(uuid));
                 receive();
             }
         };
